@@ -2,6 +2,8 @@
 
 A Letterboxd-inspired movie guessing game. Guess the movie based on popular reviews!
 
+**Play now: [https://kpj.github.io/Letterguessd/](https://kpj.github.io/Letterguessd/)**
+
 ## Gameplay
 
 1. You are presented with one review at a time.
