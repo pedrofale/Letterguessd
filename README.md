@@ -25,7 +25,7 @@ GEMINI_API_KEY=<key>
 
 Run the scraper to fetch the latest popular movies and curate reviews using Gemini:
 ```bash
-uv run scraper.py
+uv run scraper.py --count 7 --url https://letterboxd.com/films/
 ```
 This will generate or update `movie_data.json` with 7 fresh movies.
 

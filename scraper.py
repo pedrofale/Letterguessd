@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import random
@@ -198,14 +199,27 @@ def process_movie(scraper, movie_el, used_titles):
     }
 
 
-def main(num_movies=7):
+def main():
+    parser = argparse.ArgumentParser(description="Scrape Letterboxd movies.")
+    parser.add_argument(
+        "--url",
+        default="https://letterboxd.com/films/",
+        help="Letterboxd URL to scrape (list or popular films)",
+    )
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=7,
+        help="Number of movies to collect",
+    )
+    args = parser.parse_args()
+
     dotenv.load_dotenv()
 
     root_scraper = cloudscraper.create_scraper(
         browser={"browser": "chrome", "platform": "windows", "mobile": False}
     )
-    print("Fetching popular movies...")
-    movies = get_movies(root_scraper)
+    movies = get_movies(root_scraper, args.url)
 
     if not movies:
         print("Failed to find any movies.")
@@ -219,7 +233,7 @@ def main(num_movies=7):
     used_titles: set = set()
 
     for movie_el in movies_list:
-        if len(collected) >= num_movies:
+        if len(collected) >= args.count:
             break
 
         # Create a fresh scraper for each movie to avoid session-based blocks
@@ -230,7 +244,7 @@ def main(num_movies=7):
         if movie_data:
             collected.append(movie_data)
             used_titles.add(movie_data["title"])
-            print(f"Added ({len(collected)}/{num_movies})")
+            print(f"Added ({len(collected)}/{args.count})")
         else:
             time.sleep(5)
 
