@@ -48,7 +48,14 @@ To enable this, you must add your Gemini API key to GitHub:
 3. Name: `GEMINI_API_KEY`
 4. Value: Paste your Gemini API key.
 
-### 2. Enable GitHub Pages
+### 2. Configure Workflow Permissions
+
+GitHub Actions need explicit write permissions to deploy to GitHub Pages:
+1. In your repository, go to **Settings > Actions > General**.
+2. Under **Workflow permissions**, select **Read and write permissions**.
+3. Click **Save**.
+
+### 3. Enable GitHub Pages
 
 Once the first action run completes, a `gh-pages` branch will be created automatically.
 1. In your GitHub repository, go to **Settings > Pages**.
