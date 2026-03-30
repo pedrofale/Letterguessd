@@ -117,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
             (guessedTitle.length > 5 && targetTitle.includes(guessedTitle))
         );
 
-        guessHistory.push(correct ? 'correct' : isSkip ? 'skip' : 'wrong');
+        guessHistory.push({
+            type: correct ? 'correct' : isSkip ? 'skip' : 'wrong',
+            title: isSkip ? 'Skipped' : guess
+        });
         updateGuessesDisplay();
 
         if (correct) {
@@ -125,13 +128,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Add a guess card to the board (if not correct)
+        const guessCard = document.createElement('div');
+        guessCard.className = `guess-card is-${isSkip ? 'skip' : 'wrong'}`;
+
+        const statusIcon = document.createElement('span');
+        statusIcon.className = 'guess-status';
+        statusIcon.textContent = isSkip ? '⏭️' : '❌';
+
+        const guessText = document.createElement('span');
+        guessText.textContent = isSkip ? 'Skipped' : guess;
+
+        guessCard.appendChild(statusIcon);
+        guessCard.appendChild(guessText);
+        reviewsContainer.appendChild(guessCard);
+
         if (guessesMade >= MAX_GUESSES) {
             endGame(false);
             return;
         }
 
         // Wrong/skip — show feedback and reveal next review
-        feedbackMessage.textContent = isSkip ? 'Next hint revealed.' : 'Incorrect!';
+        feedbackMessage.textContent = isSkip ? 'Next hint revealed.' : `"${guess}" is incorrect.`;
         feedbackMessage.className = 'feedback-error';
         setTimeout(() => feedbackMessage.classList.add('hidden'), 2000);
 
@@ -178,9 +196,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const squares = [];
         for (let i = 0; i < MAX_GUESSES; i++) {
             const h = guessHistory[i];
-            if (h === 'correct') squares.push('🟩');
-            else if (h === 'wrong' || h === 'skip') squares.push('🟥');
-            else squares.push('⬜');
+            if (h) {
+                if (h.type === 'correct') squares.push('🟩');
+                else if (h.type === 'wrong' || h.type === 'skip') squares.push('🟥');
+            } else {
+                squares.push('⬜');
+            }
         }
         return squares.join('');
     }
