@@ -29,25 +29,33 @@ class ReviewCurator:
         ]
 
         prompt = textwrap.dedent(f"""\
-            I am building a trivia game where users guess a movie based on Letterboxd reviews.
+            I am building a trivia game where users guess a movie based on its Letterboxd reviews.
             Movie: {title} ({year})
 
-            Select exactly 10 reviews as puzzle clues:
-            - Funny, insightful, or capturing the 'vibe'.
-            - NO SPOILERS: If a review names the title or main characters, skip it entirely.
-            - Do NOT modify the text; use it exactly as written.
-            - Rank from hardest (1) to easiest (10).
+            Select exactly 10 reviews from the list below to serve as puzzle clues.
 
-            Return a JSON array of 10 objects: {{"text": "...", "author": "..."}}
+            CRITICAL CONSTRAINTS:
+            - NO MOVIE TITLE: Skip any review that mentions the title (partial or full).
+            - NO SPOILERS: Skip any review that reveals major plot twists.
+            - NO MODIFICATION: Do NOT change the text at all. Keep emojis, punctuation, and style exactly as provided.
+            - CHARACTER NAMES: Avoid character names in the first 7 clues. They are okay in clues 8-10.
+            - ACTORS/DIRECTORS: Only allowed in clues 8, 9, and 10 (Easiest clues).
 
-            Reviews:
+            RANKING (1 = Hardest, 10 = Easiest):
+            - Clues 1-4 (Hard): Focus on "vibes," cinematography style, abstract feelings, or funny observational humor that doesn't name specifics.
+            - Clues 5-7 (Medium): Focus on genre tropes, specific themes, or technical praise (music, editing).
+            - Clues 8-10 (Easy): Iconic quotes, mentions of the director's unique style, or notable actors (if you must).
+
+            Return a JSON array of exactly 10 objects: {{"text": "...", "author": "..."}}
+
+            Reviews to choose from:
             {"\n\n".join(reviews_input)}
         """)
 
         for attempt in range(3):
             try:
                 response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-3-flash-preview",
                     contents=prompt,
                     config={"response_mime_type": "application/json"},
                 )
@@ -60,7 +68,8 @@ class ReviewCurator:
 
                 if isinstance(filtered, list) and len(filtered) >= 10:
                     return filtered[:10]
-                raise ValueError("Invalid LLM response format or count")
+
+                raise ValueError(f"Invalid LLM response format or count: {response}")
             except Exception as e:
                 print(f"LLM attempt {attempt + 1} failed: {e}")
                 time.sleep(2)
