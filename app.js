@@ -42,7 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Load data
-    fetch('movie_data.json')
+    console.log(window.location.hostname)
+    const isLocal = ['localhost', '127.0.0.1', '[::]', ''].includes(window.location.hostname);
+    const DATA_URL = isLocal
+        ? 'movie_data.json'
+        : 'https://raw.githubusercontent.com/kpj/Letterguessd/data/movie_data.json';
+
+    fetch(DATA_URL)
         .then(res => res.json())
         .then(data => {
             if (!data.movies || data.movies.length === 0) {

@@ -44,31 +44,32 @@ Then, open your browser and navigate to:
 
 ## Deployment
 
-### 1. Configure Automated Updates
 
-The repository includes a GitHub Action (`.github/workflows/scrape.yml`) that automatically scrapes new data and deploys the entire site to the `gh-pages` branch.
+### Game Data
 
-To enable this, you must add your Gemini API key to GitHub:
-1. Go to **Settings > Secrets and variables > Actions**.
-2. Create a **New repository secret**.
-3. Name: `GEMINI_API_KEY`
-4. Value: Paste your Gemini API key.
+A GitHub Action (`.github/workflows/scrape.yml`) runs on a schedule to:
+-   Fetch new movies.
+-   Curate reviews using an LLM.
+-   Store the results in a dedicated **`data` branch**.
 
-### 2. Configure Workflow Permissions
+The hosted app automatically detects its environment and pulls from this branch.
 
-GitHub Actions need explicit write permissions to deploy to GitHub Pages:
-1. In your repository, go to **Settings > Actions > General**.
-2. Under **Workflow permissions**, select **Read and write permissions**.
-3. Click **Save**.
+### Source Code
 
-### 3. Enable GitHub Pages
+The source code from the **`main` branch** is automatically deployed to GitHub Pages.
 
-Once the first action run completes, a `gh-pages` branch will be created automatically.
-1. In your GitHub repository, go to **Settings > Pages**.
-2. Set the **Source** to "Deploy from a branch".
-3. Select **Branch: `gh-pages`** and **Folder: `/ (root)`**.
+1.  In your repository, go to **Settings > Pages**.
+2.  Set **Build and deployment > Branch** to **`main`**.
+3.  Click **Save**.
 
-Once configured, the game will be live and will update itself with new movies automatically.
+Once configured, any code you push to `main` will go live immediately, while the data will update itself in the background when the Github Actions workflow runs.
+
+### Repository Configuration
+
+To enable automated data updates:
+1.  Go to **Settings > Secrets and variables > Actions**.
+2.  Create a secret named `GEMINI_API_KEY` with your Gemini key.
+3.  Ensure **Settings > Actions > General > Workflow permissions** is set to **Read and write permissions**.
 
 ## Code Formatting
 
